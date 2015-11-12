@@ -83,6 +83,7 @@ public class Matrix {
         field[column - 1][row - 1] = num;
     }
 
+    @Override
     public Matrix clone() {
         Matrix matrix = new Matrix(getColumnLength(), getRowLength());
         this.foreach(matrix::set);

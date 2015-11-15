@@ -3,7 +3,7 @@ package com.company;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class Main {
+public class Main extends C{
 
     public static void main(String[] args) {
         testInverse();
@@ -17,8 +17,8 @@ public class Main {
                 {5, 3, 1, 0}
         };
         Matrix A = new Matrix(a);
-        C.p(A.multi(A.inverse()));
-        C.p(A.inverse().multi(A));
+        p(A.multi(A.inverse()));
+        p(A.inverse().multi(A));
     }
 
 

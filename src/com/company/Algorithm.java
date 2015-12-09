@@ -224,12 +224,10 @@ public class Algorithm {
             for (int i = 0; i < x.length; i++) {
                 double ax = 0;
                 for (int j = 0; j < x.length; j++) {
-                    lastx[j] = x[j];
-                }
-                for (int j = 0; j < x.length; j++) {
                     if (i != j)
                         ax += a[i][j] * lastx[i];
                 }
+                lastx[i] = x[i];
                 x[i] = 1 / a[i][i] * (b[i] - ax);
             }
             if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
@@ -238,12 +236,55 @@ public class Algorithm {
         }
         return new double[b.length];
     }
+
+    public static double[] Gauss_Seidel(
+            double[][] a, double[] b, double[] x, double eps, int max, ConvergenceTestMethod method, NormType type) {
+        double[] lastx = new double[b.length];
+        for (int m = 0; m < max; m++) {
+            for (int i = 0; i < x.length; i++) {
+                double ax = 0;
+                for (int j = 0; j < x.length; j++) {
+                    if (i != j)
+                        ax += a[i][j] * x[i];
+                }
+                lastx[i] = x[i];
+                x[i] = 1 / a[i][i] * (b[i] - ax);
+            }
+            if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
+                return x;
+            }
+        }
+        return new double[b.length];
+    }
+
+    public static double[] SOR(
+            double[][] a, double[] b, double[] x, double eps, int max, double omega, ConvergenceTestMethod method, NormType type) {
+        double[] lastx = new double[b.length];
+        for (int m = 0; m < max; m++) {
+            for (int i = 0; i < x.length; i++) {
+                double ax = 0;
+                for (int j = 0; j < x.length; j++) {
+                    if (i != j)
+                        ax += a[i][j] * x[i];
+                }
+                lastx[i] = x[i];
+                x[i] = 1 / a[i][i] * (b[i] - ax);
+                x[i] = (1 - omega) * lastx[i] + omega * x[i];
+            }
+            if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
+                return x;
+            }
+        }
+        return new double[b.length];
+    }
 }
+
 class lu_decompositionResult {
     lu_decompositionResult(int n) {
         L = new double[n][n];
         U = new double[n][n];
     }
+
     public double[][] L;
     public double[][] U;
 }

@@ -1,30 +1,34 @@
 package com.company;
 
+import java.util.function.Consumer;
+
 /**
  * Created by Main on 15/09/28.
  */
-public class GaussianElimination {
+public class Algorithm {
 
-    public static Matrix algorithm1(Matrix a) {
-        return algorithm1ToMatrix(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
+    public static Matrix GaussianEliminationToMatrix(Matrix a) {
+        return GaussianEliminationToMatrix(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
     }
 
-    public static Vector algorithm(Matrix a) {
-        return algorithmToVector(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
+    public static Vector GaussianEliminationToVector(Matrix a) {
+        return GaussianEliminationToVector(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
     }
 
-    public static Matrix algorithm1ToMatrix(double[][] a, double[] b) {
+    public static Matrix GaussianEliminationToMatrix(double[][] a, double[] b) {
         ForwardSubstitution(a, b);
+        BackwardElimination(a, b);
         return toMatrix(a, b);
     }
 
-    public static Vector algorithmToVector(double[][] a, double[] b) {
+    public static Vector GaussianEliminationToVector(double[][] a, double[] b) {
         ForwardSubstitution(a, b);
         BackwardElimination(a, b);
         return new Vector(b);
     }
 
-    public static Vector algorithmWithPivotToVector(double[][] a, double[] b) throws Exception {
+    public static Vector GaussianEliminationWithPivotToVector(double[][] a, double[] b)
+            throws Exception {
         ForwardSubstitutionWithPivot(a, b);
         BackwardElimination(a, b);
         return new Vector(b);
@@ -58,7 +62,8 @@ public class GaussianElimination {
         }
     }
 
-    public static void ForwardSubstitutionWithPivot(double[][] a, double[] b) throws Exception {
+    public static void ForwardSubstitutionWithPivot(double[][] a, double[] b)
+            throws Exception {
         double alfa;
         int n = b.length;
         int l;
@@ -168,19 +173,73 @@ public class GaussianElimination {
             for (int k = 0; k < n; k++) {
                 y[k][i] = e[k][i];
                 for (int j = 0; j < k; j++) {
-                    y[k][i] -= res.L[k][j] * y[j][i];
+                    y[k][i] -= mtx[k][j] * y[j][i];
                 }
             }
             for (int k = n - 1; k >= 0; k--) {
                 x[k][i] = y[k][i];
                 for (int j = k + 1; j < n; j++) {
-                    x[k][i] -= res.U[k][j] * x[j][i];
+                    x[k][i] -= mtx[k][j] * x[j][i];
                 }
-                x[k][i] /= res.U[k][k];
+                x[k][i] /= mtx[k][k];
             }
         }
         return x;
     }
+
+    enum ConvergenceTestMethod {
+        gosa,
+        zansa,
+        soutaigosa,
+        soutaizansa,
+    }
+
+    private static boolean ConvergenceTest(
+            double[][] a, double[] b, double[] x1, double[] x0, double eps, ConvergenceTestMethod method, NormType type) {
+        switch (method) {
+            case gosa:
+                if (new Vector(x1).sub(new Vector(x0)).getNorm(type) < eps)
+                    return true;
+                break;
+            case zansa:
+                if (new Vector(b).sub(new Matrix(a).multi(new Vector(x1))).getNorm(type) < eps)
+                    return true;
+                break;
+            case soutaigosa:
+                if (new Vector(x1).sub(new Vector(x0)).getNorm(type) / new Vector(x1).getNorm(type) < eps)
+                    return true;
+                break;
+            case soutaizansa:
+                if (new Vector(b).sub(new Matrix(a).multi(new Vector(x1))).getNorm(type) / new Vector(b).getNorm(type) < eps)
+                    return true;
+                break;
+        }
+        return false;
+    }
+
+    public static double[] jacobi(
+            double[][] a, double[] b, double[] x, double eps, int max, ConvergenceTestMethod method, NormType type) {
+        double[] lastx = new double[b.length];
+        for (int m = 0; m < max; m++) {
+            for (int i = 0; i < x.length; i++) {
+                double ax = 0;
+                for (int j = 0; j < x.length; j++) {
+                    lastx[j] = x[j];
+                }
+                for (int j = 0; j < x.length; j++) {
+                    if (i != j)
+                        ax += a[i][j] * lastx[i];
+                }
+                x[i] = 1 / a[i][i] * (b[i] - ax);
+            }
+            if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
+                return x;
+            }
+        }
+        return new double[b.length];
+    }
+
+
 }
 
 class LUResult {

@@ -168,7 +168,11 @@ public class Matrix {
 
     public Matrix inverse(){
 
-        return new Matrix(GaussianElimination.inverse_matrix(toArray()));
+        return new Matrix(Algorithm.inverse_matrix(toArray()));
+    }
+
+    public double getNorm1() {
+        return transpose().getNormInf();
     }
 
     public double getNormInf() {

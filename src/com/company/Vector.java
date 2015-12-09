@@ -5,6 +5,13 @@ import java.util.function.BiConsumer;
 /**
  * Created by Main on 15/09/30.
  */
+
+enum NormType {
+    One,
+    Two,
+    Inf
+}
+
 public class Vector {
     public double[] field;
 
@@ -72,6 +79,25 @@ public class Vector {
         return new Vector(res);
     }
 
+    public double getNorm(NormType norm){
+        switch (norm){
+            case One:
+                return getNorm1();
+            case Two:
+                return getNorm2();
+            case Inf:
+                return getNormInf();
+        }
+        return getNorm2();
+    }
+
+    public double getNorm1(){
+        double res = 0;
+        for (int i = 0; i < field.length; i++) {
+            res += field[i];
+        }
+        return res;
+    }
     public double getNorm2() {
         double res = 0;
         for (int i = 0; i < field.length; i++) {
@@ -81,10 +107,11 @@ public class Vector {
     }
 
     public double getNormInf() {
-        double res = 0;
+        double res = field[0];
         for (int i = 0; i < field.length; i++) {
             if (field[i] > res) res = field[i];
         }
         return res;
     }
 }
+

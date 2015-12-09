@@ -1,9 +1,9 @@
 package com.company;
-
+import static com.company.C.*;
 /**
  * Created by Main on 2015/11/09.
  */
-public class Main1109 extends C {
+public class Main1109{
     public static void main(String[] args){
         solve(5);
         p();
@@ -15,18 +15,16 @@ public class Main1109 extends C {
     public static void solve(int n){
         Matrix hil = new HilbertMatrix(n);
         double k = hil.getNormInf() * hil.inverse().getNormInf();
-
         p("n = " + n);
         p("(1)");
         p(k);
         Vector b = hil.multi(getElementVector(n));
         Vector x1;
-
         p("(2)");
         try {
-            x1 = GaussianElimination.algorithmWithPivotToVector(hil.toArray(), b.toArray());
-            C.p(b.sub(hil.multi(x1)).getNormInf());
-            C.p(getElementVector(n).sub(x1).getNormInf());
+            x1 = Algorithm.GaussianEliminationWithPivotToVector(hil.toArray(), b.toArray());
+            p(b.sub(hil.multi(x1)).getNormInf());
+            p(getElementVector(n).sub(x1).getNormInf());
         } catch (Exception e) {
         }
 
@@ -37,7 +35,7 @@ public class Main1109 extends C {
 
         p("(4)");
         try {
-            x1 = GaussianElimination.algorithmWithPivotToVector(hil.toArray(), b.add(delb).toArray());
+            x1 = Algorithm.GaussianEliminationWithPivotToVector(hil.toArray(), b.add(delb).toArray());
             p(getElementVector(n).sub(x1).getNormInf());
         } catch (Exception e) {
         }

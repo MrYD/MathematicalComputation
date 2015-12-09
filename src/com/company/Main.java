@@ -1,9 +1,9 @@
 package com.company;
-
+import static com.company.C.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class Main extends C{
+public class Main{
 
     public static void main(String[] args) {
         testInverse();
@@ -29,7 +29,7 @@ public class Main extends C{
                 {1, 5, 5},
                 {1, 5, 14}
         };
-        double[][] l = GaussianElimination.cholesky_decomposition(a);
+        double[][] l = Algorithm.cholesky_decomposition(a);
         Matrix L = new Matrix(l);
         System.out.println(L);
     }
@@ -41,7 +41,7 @@ public class Main extends C{
                 {1, 5, 5},
                 {1, 5, 14}
         };
-        LUResult res = GaussianElimination.lu_decomposition(a);
+        LUResult res = Algorithm.lu_decomposition(a);
         Matrix L = new Matrix(res.L);
         Matrix U = new Matrix(res.U);
         System.out.print(L.multi(U));
@@ -65,7 +65,7 @@ public class Main extends C{
             Vector xvct;
             try {
                 //xvct = GaussianElimination.algorithmToVector(A, b);
-                xvct = GaussianElimination.algorithmWithPivotToVector(A, b);
+                xvct = Algorithm.GaussianEliminationWithPivotToVector(A, b);
             } catch (Exception e) {
                 xvct = new Vector(n);
             }

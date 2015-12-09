@@ -1,5 +1,4 @@
 package com.company;
-import static com.company.C.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
@@ -17,8 +16,10 @@ public class Main{
                 {5, 3, 1, 0}
         };
         Matrix A = new Matrix(a);
-        p(A.multi(A.inverse()));
-        p(A.inverse().multi(A));
+        System.out.println(A.multi(A.inverse()));
+        System.out.println(A.inverse().multi(A));
+
+
     }
 
 

@@ -108,7 +108,7 @@ public class Algorithm {
     }
 
 
-    public static LUResult lu_decomposition(double[][] a) {
+    public static lu_decompositionResult lu_decomposition(double[][] a) {
         int n = a.length;
         int t, i, j;
         for (t = 0; t < n - 1; t++) {
@@ -118,7 +118,7 @@ public class Algorithm {
                     a[i][j] -= a[i][t] * a[t][j];
             }
         }
-        LUResult res = new LUResult(n);
+        lu_decompositionResult res = new lu_decompositionResult(n);
         for (int k = 0; k < n; k++) {
             for (int l = 0; l < n; l++) {
                 if (k < l) {
@@ -168,7 +168,7 @@ public class Algorithm {
         }
         double[][] y = new double[n][n];
         double[][] x = new double[n][n];
-        LUResult res = lu_decomposition(mtx);
+        lu_decompositionResult res = lu_decomposition(mtx);
         for (int i = 0; i < n; i++) {
             for (int k = 0; k < n; k++) {
                 y[k][i] = e[k][i];
@@ -238,16 +238,13 @@ public class Algorithm {
         }
         return new double[b.length];
     }
-
-
 }
-
-class LUResult {
-    LUResult(int n) {
+class lu_decompositionResult {
+    lu_decompositionResult(int n) {
         L = new double[n][n];
         U = new double[n][n];
     }
-
     public double[][] L;
     public double[][] U;
 }
+

@@ -41,7 +41,7 @@ public class Main{
                 {1, 5, 5},
                 {1, 5, 14}
         };
-        LUResult res = Algorithm.lu_decomposition(a);
+        lu_decompositionResult res = Algorithm.lu_decomposition(a);
         Matrix L = new Matrix(res.L);
         Matrix U = new Matrix(res.U);
         System.out.print(L.multi(U));

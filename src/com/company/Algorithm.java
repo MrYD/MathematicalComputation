@@ -7,30 +7,42 @@ import java.util.function.Consumer;
  */
 public class Algorithm {
 
-    public static Matrix GaussianEliminationToMatrix(Matrix a) {
-        return GaussianEliminationToMatrix(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
+    public static Matrix gaussianEliminationToMatrix(Matrix a) {
+        return gaussianEliminationToMatrix(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toDoubleArray(), a.getColumn(a.getRowLength()).toDoubleArray());
     }
 
-    public static Vector GaussianEliminationToVector(Matrix a) {
-        return GaussianEliminationToVector(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toArray(), a.getColumn(a.getRowLength()).toArray());
+    public static Vector gaussianEliminationToVector(Matrix a) {
+        return gaussianEliminationToVector(a.getPartial(1, 1, a.getColumnLength(), a.getColumnLength()).toDoubleArray(), a.getColumn(a.getRowLength()).toDoubleArray());
     }
 
-    public static Matrix GaussianEliminationToMatrix(double[][] a, double[] b) {
-        ForwardSubstitution(a, b);
-        BackwardElimination(a, b);
+    public static double[] gaussianElimination(double[][] a, double[] b) {
+        forwardSubstitution(a, b);
+        backwardElimination(a, b);
+        return b;
+    }
+
+    public static double[] gaussianEliminationWithPivot(double[][] a, double[] b) throws Exception {
+        forwardSubstitutionWithPivot(a, b);
+        backwardElimination(a, b);
+        return b;
+    }
+
+    public static Matrix gaussianEliminationToMatrix(double[][] a, double[] b) {
+        forwardSubstitution(a, b);
+        backwardElimination(a, b);
         return toMatrix(a, b);
     }
 
-    public static Vector GaussianEliminationToVector(double[][] a, double[] b) {
-        ForwardSubstitution(a, b);
-        BackwardElimination(a, b);
+    public static Vector gaussianEliminationToVector(double[][] a, double[] b) {
+        forwardSubstitution(a, b);
+        backwardElimination(a, b);
         return new Vector(b);
     }
 
-    public static Vector GaussianEliminationWithPivotToVector(double[][] a, double[] b)
+    public static Vector gaussianEliminationWithPivotToVector(double[][] a, double[] b)
             throws Exception {
-        ForwardSubstitutionWithPivot(a, b);
-        BackwardElimination(a, b);
+        forwardSubstitutionWithPivot(a, b);
+        backwardElimination(a, b);
         return new Vector(b);
     }
 
@@ -48,7 +60,7 @@ public class Algorithm {
         return res;
     }
 
-    public static void ForwardSubstitution(double[][] a, double[] b) {
+    public static void forwardSubstitution(double[][] a, double[] b) {
         double alfa;
         int n = b.length;
         for (int k = 0; k < n - 1; k++) {
@@ -62,7 +74,7 @@ public class Algorithm {
         }
     }
 
-    public static void ForwardSubstitutionWithPivot(double[][] a, double[] b)
+    public static void forwardSubstitutionWithPivot(double[][] a, double[] b)
             throws Exception {
         double alfa;
         int n = b.length;
@@ -97,7 +109,7 @@ public class Algorithm {
         }
     }
 
-    public static void BackwardElimination(double[][] a, double[] b) {
+    public static void backwardElimination(double[][] a, double[] b) {
         int n = b.length;
         for (int k = n - 1; k >= 0; k--) {
             for (int j = k + 1; j < n; j++) {
@@ -227,11 +239,13 @@ public class Algorithm {
                     if (i != j)
                         ax += a[i][j] * lastx[i];
                 }
-                lastx[i] = x[i];
-                x[i] = 1 / a[i][i] * (b[i] - ax);
+                x[i] = (b[i] - ax) / a[i][i];
             }
             if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
                 return x;
+            }
+            for (int i = 0; i < x.length; i++) {
+                lastx[i] = x[i];
             }
         }
         return new double[b.length];
@@ -247,11 +261,13 @@ public class Algorithm {
                     if (i != j)
                         ax += a[i][j] * x[i];
                 }
-                lastx[i] = x[i];
                 x[i] = 1 / a[i][i] * (b[i] - ax);
             }
             if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
                 return x;
+            }
+            for (int i = 0; i < x.length; i++) {
+                lastx[i] = x[i];
             }
         }
         return new double[b.length];
@@ -267,12 +283,14 @@ public class Algorithm {
                     if (i != j)
                         ax += a[i][j] * x[i];
                 }
-                lastx[i] = x[i];
                 x[i] = 1 / a[i][i] * (b[i] - ax);
                 x[i] = (1 - omega) * lastx[i] + omega * x[i];
             }
             if (ConvergenceTest(a, b, x, lastx, eps, method, type)) {
                 return x;
+            }
+            for (int i = 0; i < x.length; i++) {
+                lastx[i] = x[i];
             }
         }
         return new double[b.length];

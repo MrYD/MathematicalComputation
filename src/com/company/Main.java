@@ -66,7 +66,7 @@ public class Main{
             Vector xvct;
             try {
                 //xvct = GaussianElimination.algorithmToVector(A, b);
-                xvct = Algorithm.GaussianEliminationWithPivotToVector(A, b);
+                xvct = Algorithm.gaussianEliminationWithPivotToVector(A, b);
             } catch (Exception e) {
                 xvct = new Vector(n);
             }

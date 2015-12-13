@@ -20,6 +20,10 @@ public class Complex {
         this.imaginary = 0;
     }
 
+    public Complex clone(){
+        return new Complex(real,imaginary);
+    }
+
     public Complex add(Complex x) {
         return new Complex(x.real + this.real, x.imaginary + this.imaginary);
     }
@@ -41,7 +45,14 @@ public class Complex {
     }
 
     public String toString() {
-        return "(" + real + "," + imaginary + ")";
+        if (imaginary == 0)
+            return real + "";
+        else
+            return "(" + real + "," + imaginary + ")";
+    }
+
+    public Complex multiply(Complex complex) {
+        return new Complex(real * complex.real - imaginary * complex.imaginary, real * complex.imaginary + complex.real * imaginary);
     }
 }
 

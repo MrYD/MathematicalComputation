@@ -13,37 +13,61 @@ enum NormType {
 }
 
 public class Vector {
-    public double[] field;
+    public Complex[] field;
 
     public Vector(int i) {
-        field = new double[i];
+        field = new Complex[i];
+        for (int j = 0; j < field.length; j++) {
+            field[j] = new Complex();
+        }
     }
 
     public Vector(double[] array) {
-        field = array.clone();
+        field = new Complex[array.length];
+        for (int i = 0; i < array.length; i++) {
+            field[i] =new Complex(array[i],0);
+        }
+    }
+
+    public Vector(Complex[] array) {
+        field = new Complex[array.length];
+        for (int i = 0; i < array.length; i++) {
+            field[i] = array[i].clone();
+        }
     }
 
     public int getLength() {
         return field.length;
     }
 
-    public double[] toArray() {
+    public Complex[] toComplexArray() {
         return field.clone();
     }
-
-    public Vector clone() {
-        return new Vector(toArray());
+    public double[] toDoubleArray() {
+        double[] array = new double[field.length];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = field[i].real;
+        }
+        return array;
     }
 
-    public double get(int i) {
+
+    public Vector clone() {
+        return new Vector(toComplexArray());
+    }
+
+    public Complex get(int i) {
         return field[i - 1];
     }
 
-    public void set(int i, double value) {
+    public void set(int i, Complex value) {
         field[i - 1] = value;
     }
+    public void set(int i, double value) {
+        field[i - 1] = new Complex(value,0);
+    }
 
-    public void foreach(BiConsumer<Integer, Double> func) {
+    public void foreach(BiConsumer<Integer, Complex> func) {
         for (int i = 1; i <= getLength(); i++) {
             func.accept(i, field[i]);
         }
@@ -64,17 +88,17 @@ public class Vector {
     }
 
     public Vector add(Vector multi) {
-        double[] res = new double[multi.getLength()];
+        Complex[] res = new Complex[multi.getLength()];
         for (int i = 0; i < field.length; i++) {
-            res[i] = field[i] + multi.get(i + 1);
+            res[i] = field[i].add(multi.get(i + 1));
         }
         return new Vector(res);
     }
 
     public Vector sub(Vector multi) {
-        double[] res = new double[multi.getLength()];
+        Complex[] res = new Complex[multi.getLength()];
         for (int i = 0; i < field.length; i++) {
-            res[i] = field[i] - multi.get(i + 1);
+            res[i] = field[i].sub(multi.get(i + 1));
         }
         return new Vector(res);
     }
@@ -94,22 +118,23 @@ public class Vector {
     public double getNorm1(){
         double res = 0;
         for (int i = 0; i < field.length; i++) {
-            res += field[i];
+            res += field[i].magnitude();
         }
         return res;
     }
     public double getNorm2() {
         double res = 0;
         for (int i = 0; i < field.length; i++) {
-            res += field[i] * field[i];
+            res += field[i].magnitude() * field[i].magnitude();
         }
         return Math.sqrt(res);
     }
 
     public double getNormInf() {
-        double res = field[0];
+        double res = field[0].magnitude();
         for (int i = 0; i < field.length; i++) {
-            if (field[i] > res) res = field[i];
+            if (field[i].magnitude() > res)
+                res = field[i].magnitude();
         }
         return res;
     }

@@ -14,6 +14,6 @@ public class Main1208 {
                 3, 7, 11
         });
         System.out.println(
-                new Vector(Algorithm.jacobi(a.field, b.field, new double[]{0, 0, 0}, 10E-8, 50, Algorithm.ConvergenceTestMethod.soutaigosa, NormType.Two)));
+                new Vector(Algorithm.jacobi(a.toDoubleArray(), b.toDoubleArray(), new double[]{0, 0, 0}, 10E-8, 50, Algorithm.ConvergenceTestMethod.soutaigosa, NormType.Two)));
     }
 }

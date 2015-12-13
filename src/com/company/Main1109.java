@@ -21,7 +21,7 @@ public class Main1109{
         Vector x1;
         System.out.println("(2)");
         try {
-            x1 = Algorithm.GaussianEliminationWithPivotToVector(hil.toArray(), b.toArray());
+            x1 = Algorithm.gaussianEliminationWithPivotToVector(hil.toDoubleArray(), b.toDoubleArray());
             System.out.println(b.sub(hil.multi(x1)).getNormInf());
             System.out.println(getElementVector(n).sub(x1).getNormInf());
         } catch (Exception e) {
@@ -29,12 +29,12 @@ public class Main1109{
 
         System.out.println("(3)");
         Vector delb = new Vector(b.getLength());
-        delb.set(1, 0.001 * b.get(1));
+        delb.set(1, 0.001 * b.get(1).real);
         System.out.println(k * delb.getNormInf() / b.getNormInf());
 
         System.out.println("(4)");
         try {
-            x1 = Algorithm.GaussianEliminationWithPivotToVector(hil.toArray(), b.add(delb).toArray());
+            x1 = Algorithm.gaussianEliminationWithPivotToVector(hil.toDoubleArray(), b.add(delb).toDoubleArray());
             System.out.println(getElementVector(n).sub(x1).getNormInf());
         } catch (Exception e) {
         }

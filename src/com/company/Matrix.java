@@ -13,16 +13,33 @@ import java.util.function.Function;
  */
 
 public class Matrix {
-    public double[][] field;
-
+    public Complex[][] field;
     public Matrix(int column, int row) {
-        field = new double[column][row];
+        field = new Complex[column][];
+        for (int i = 0; i < field.length; i++) {
+            field[i] = new Complex[row];
+            for (int j = 0; j < field[i].length; j++) {
+                field[i][j] = new Complex();
+            }
+        }
     }
 
     public Matrix(double[][] field) {
-        this.field = new double[field.length][];
+        this.field = new Complex[field.length][];
         for (int i = 0; i < field.length; i++) {
-            this.field[i] = field[i].clone();
+            this.field[i] = new Complex[field[i].length];
+            for (int j = 0; j < field[i].length; j++) {
+                this.field[i][j] = new Complex(field[i][j],0);
+            }
+        }
+    }
+    public Matrix(Complex[][] field) {
+        this.field = new Complex[field.length][];
+        for (int i = 0; i < field.length; i++) {
+            this.field[i] = new Complex[field[i].length];
+            for (int j = 0; j < field[i].length; j++) {
+                this.field[i][j] = field[i][j].clone();
+            }
         }
     }
 
@@ -37,10 +54,18 @@ public class Matrix {
         return field[0].length;
     }
 
-    public double[][] toArray() {
-        double[][] array = new double[getColumnLength()][getRowLength()];
+    public Complex[][] toComplexArray() {
+        Complex[][] array = new Complex[getColumnLength()][getRowLength()];
         foreach((i, j, num) -> {
             array[i - 1][j - 1] = num;
+        });
+        return array;
+    }
+
+    public double[][] toDoubleArray(){
+        double[][] array = new double[getColumnLength()][getRowLength()];
+        foreach((i, j, num) -> {
+            array[i - 1][j - 1] = num.real;
         });
         return array;
     }
@@ -73,14 +98,18 @@ public class Matrix {
         return v;
     }
 
-    public double get(int column, int row) {
+    public Complex get(int column, int row) {
 
         return field[column - 1][row - 1];
     }
 
-    public void set(int column, int row, double num) {
+    public void set(int column, int row, Complex num) {
 
         field[column - 1][row - 1] = num;
+    }
+    public void set(int column, int row, double num) {
+
+        field[column - 1][row - 1] = new Complex(num,0);
     }
 
     @Override
@@ -90,7 +119,7 @@ public class Matrix {
         return matrix;
     }
 
-    public void foreach(TriConsumer<Integer, Integer, Double> func) {
+    public void foreach(TriConsumer<Integer, Integer, Complex> func) {
         for (int i = 1; i <= getColumnLength(); i++) {
             for (int j = 1; j <= getRowLength(); j++) {
                 func.apply(i, j, get(i, j));
@@ -101,7 +130,7 @@ public class Matrix {
     public Matrix add(Matrix matrix) {
         Matrix mat = new Matrix(getColumnLength(), getRowLength());
         mat.foreach((i, j, num) -> {
-            mat.set(i, j, get(i, j) + num);
+            mat.set(i, j, get(i, j).add(num));
         });
         return mat;
     }
@@ -109,7 +138,7 @@ public class Matrix {
     public Matrix sub(Matrix matrix) {
         Matrix mat = new Matrix(getColumnLength(), getRowLength());
         mat.foreach((i, j, num) -> {
-            mat.set(i, j, get(i, j) - num);
+            mat.set(i, j, get(i, j).sub(num));
         });
         return mat;
     }
@@ -117,7 +146,7 @@ public class Matrix {
     public Matrix multi(double x) {
         Matrix mat = new Matrix(getColumnLength(), getRowLength());
         mat.foreach((i, j, num) -> {
-            mat.set(i, j, get(i, j) * x);
+            mat.set(i, j, get(i, j).multiply(x));
         });
         return mat;
     }
@@ -125,9 +154,9 @@ public class Matrix {
     public Matrix multi(Matrix matrix) {
         Matrix mat = new Matrix(matrix.getColumnLength(), getRowLength());
         mat.foreach((i, j, num) -> {
-            double x = 0;
+            Complex x = new Complex();
             for (int k = 1; k <= getRowLength(); k++) {
-                x += this.get(i, k) * matrix.get(k, j);
+                x = x.add(this.get(i, k).multiply(matrix.get(k, j)));
             }
             mat.set(i, j, x);
         });
@@ -167,8 +196,7 @@ public class Matrix {
     }
 
     public Matrix inverse(){
-
-        return new Matrix(Algorithm.inverse_matrix(toArray()));
+        return new Matrix(Algorithm.inverse_matrix(toDoubleArray()));
     }
 
     public double getNorm1() {
@@ -180,7 +208,7 @@ public class Matrix {
         double norm = 0;
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[i].length; j++) {
-                norm += Math.abs(field[i][j]);
+                norm += field[i][j].magnitude();
             }
             if (norm > max) max = norm;
             norm = 0;
@@ -189,10 +217,11 @@ public class Matrix {
     }
 
     public Vector multi(Vector vct) {
-        double[] res = new double[getColumnLength()];
+        Complex[] res = new Complex[getColumnLength()];
         for (int i = 0; i < getColumnLength(); i++) {
+            res[i] = new Complex();
             for (int k = 0; k < getRowLength(); k++) {
-                res[i] += field[i][k] * vct.field[k];
+                res[i] = res[i].add(field[i][k].multiply(vct.field[k]));
             }
         }
         return new Vector(res);

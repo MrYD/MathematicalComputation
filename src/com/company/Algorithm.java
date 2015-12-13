@@ -199,7 +199,7 @@ public class Algorithm {
         return x;
     }
 
-    enum ConvergenceTestMethod {
+    public enum ConvergenceTestMethod {
         gosa,
         zansa,
         soutaigosa,
@@ -295,15 +295,5 @@ public class Algorithm {
         }
         return new double[b.length];
     }
-}
-
-class lu_decompositionResult {
-    lu_decompositionResult(int n) {
-        L = new double[n][n];
-        U = new double[n][n];
-    }
-
-    public double[][] L;
-    public double[][] U;
 }
 

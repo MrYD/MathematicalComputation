@@ -1,4 +1,5 @@
-package com.company;
+package main;
+import com.company.*;
 /**
  * Created by Main on 2015/11/09.
  */

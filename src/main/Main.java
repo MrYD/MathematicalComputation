@@ -1,6 +1,5 @@
-package com.company;
-import java.lang.reflect.Array;
-import java.util.Arrays;
+package main;
+import com.company.*;
 
 public class Main{
 

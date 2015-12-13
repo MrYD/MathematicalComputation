@@ -2,16 +2,6 @@ package com.company;
 
 import java.util.function.BiConsumer;
 
-/**
- * Created by Main on 15/09/30.
- */
-
-enum NormType {
-    One,
-    Two,
-    Inf
-}
-
 public class Vector {
     public Complex[] field;
 

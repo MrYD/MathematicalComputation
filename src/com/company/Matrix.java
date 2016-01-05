@@ -226,4 +226,11 @@ public class Matrix {
         }
         return new Vector(res);
     }
+    public static Matrix generate(int columnlength, int rowlength, double range){
+        Matrix matrix = new Matrix(new double[columnlength][rowlength]);
+        matrix.foreach((i,j,c)->{
+            matrix.set(i,j,(Math.random() - 0.5) * 2.0 * range);
+        });
+        return matrix;
+    }
 }

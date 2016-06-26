@@ -30,8 +30,6 @@ public class Report2 {
                     str += (char) ch;
             }
             filereader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -39,11 +37,11 @@ public class Report2 {
         quick_sort(Array);
 
         for (Seiseki itr:Array) {
-            System.out.println(itr.Number +" " + itr.getScore());
+            System.out.println(itr);
         }
     }
 
-    static void quick_sort(Seiseki[] d) {
+    private static void quick_sort(Seiseki[] d) {
         // 再帰関数だとスタックオーバーフローになるのでwhileで書く
         // スタックにクイックソートの引数を格納し、引数がなくなるまでループ
         Stack<int[]> stack = new Stack<>();
@@ -65,7 +63,7 @@ public class Report2 {
                 while(d[l].getScore() >= p.getScore()) {
                     // ピボット成績が同じ場合は受験番号をみる
                     if(d[l].getScore() == p.getScore()){
-                        if(d[l].Number > p.Number || l == c) {
+                        if(d[l].getNumber() > p.getNumber() || l == c) {
                             break;
                         }
                     }
@@ -75,13 +73,12 @@ public class Report2 {
                 while(d[r].getScore() <= p.getScore()) {
                     // ピボットと成績が同じ場合は受験番号をみる
                     if(d[r].getScore() == p.getScore()){
-                        if(d[r].Number < p.Number || r == c){
+                        if(d[r].getNumber() < p.getNumber() || r == c){
                             break;
                         }
                     }
                     r--;
                 }
-
                 // 入れ替え
                 if (l <= r) {
                     Seiseki tmp = d[l];
@@ -99,43 +96,59 @@ public class Report2 {
 }
 class Seiseki
 {
-    public int Number;
-    public int Math2B;
-    public int Math3C;
-    public int English;
-    public int Physics;
-    public int Chemical;
-    public int Biology;
-    public int EarthScience;
-    public int getScore(){
+    String Number;
+    String Math2B;
+    String Math3C;
+    String English;
+    String Physics;
+    String Chemical;
+    String Biology;
+    String EarthScience;
+    int getScore(){
         return _score;
     }
+    int getNumber(){
+        return _number;
+    }
     private int _score;
-    private int _sience1;
-    private int _sience2;
+    private int _number;
 
-    public Seiseki(String str){
-        Number = Integer.parseInt(str.substring(0,5).trim());
-        Math2B = Integer.parseInt(str.substring(7,10).trim());
-        Math3C = Integer.parseInt(str.substring(12,15).trim());
-        English = Integer.parseInt(str.substring(17,20).trim());
-        Physics = Integer.parseInt(str.substring(22,25).trim());
-        Chemical = Integer.parseInt(str.substring(27,30).trim());
-        Biology =Integer.parseInt(str.substring(32,35).trim());
-        EarthScience = Integer.parseInt(str.substring(37,40).trim());
+    Seiseki(String str){
+      init(str);
+    }
 
-        _sience1 = Physics;
-        _sience2 = Chemical;
-        if(Biology > _sience1) _sience1 = Biology;
-        else if(Biology > _sience2) _sience2 = Biology;
-        if(EarthScience > _sience1) _sience1 = EarthScience;
-        else if(EarthScience > _sience2) _sience2 = EarthScience;
-        _score = Math2B+Math3C+English+_sience1+_sience2;
+    void init(String str){
+        Number = str.substring(0,5);
+        Math2B = str.substring(7,10);
+        Math3C = str.substring(12,15);
+        English = str.substring(17,20);
+        Physics = str.substring(22,25);
+        Chemical = str.substring(27,30);
+        Biology = str.substring(32,35);
+        EarthScience = str.substring(36,40);
+
+        int math2B = Integer.parseInt(Math2B.trim());
+        int math3C = Integer.parseInt(Math3C.trim());
+        int english = Integer.parseInt(English.trim());
+        int physics = Integer.parseInt(Physics.trim());
+        int chemical = Integer.parseInt(Chemical.trim());
+        int biology =Integer.parseInt(Biology.trim());
+        int earthScience = Integer.parseInt(EarthScience.trim());
+
+        int sience1 = physics;
+        int sience2 = chemical;
+        if(biology > sience1) sience1 = biology;
+        else if(biology > sience2) sience2 = biology;
+        if(earthScience > sience1) sience1 = earthScience;
+        else if(earthScience > sience2) sience2 = earthScience;
+
+        _number = Integer.parseInt(str.substring(0,5).trim());
+        _score = math2B + math3C +english + sience1 + sience2;
     }
 
     @Override
     public String toString() {
-        return "" + Number + " " + Math2B + " " + Math3C + " " + English
-                + " " + Physics + " " + Chemical +" "+ Biology +" "+ EarthScience;
+        return Number+"  "+Math2B+"  "+Math3C+"  "+English
+                +"  "+Physics+"  "+Chemical+"  "+Biology+"  "+EarthScience;
     }
 }

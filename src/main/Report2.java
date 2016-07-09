@@ -15,7 +15,7 @@ public class Report2 {
         Seiseki[] Array = new Seiseki[n];
 
         try {
-            File file = new File("C:\\Users\\wang\\Desktop\\Seiseki.dat");
+            File file = new File("out/production/ConsoleApp1/main/Seiseki.dat");
             FileReader filereader = new FileReader(file);
             int count = 0;
             int ch;

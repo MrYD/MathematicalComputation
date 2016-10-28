@@ -3,7 +3,7 @@ import com.company.*;
 /**
  * Created by Main on 2016/06/28.
  */
-public class Reprt3 {
+public class Report3 {
     public static void main(String[] Args){
 
     }

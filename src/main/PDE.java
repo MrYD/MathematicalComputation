@@ -10,12 +10,13 @@ import javafx.scene.canvas.*;
 public class PDE extends Application{
 
     /* 初期条件の設定 */
+    static int n = 5;
     static double dt = 0.001;
-    static double dx = 0.01;
-    static double kappa = 0.0117; // 金の熱伝達係数 m^2/s //
+    static double dx = 0.01 / n;
+    static double kappa = 0.000023473150395; // 熱伝達係数 m^2/s //
     static double lambda = kappa * dt / dx / dx;
-    static int height = 61; // 格子点の数 (長さ60cm)
-    static int width = 41; // 格子点の数 (幅40cm)
+    static int height = 61 * n; // 格子点の数 (長さ60cm)
+    static int width = 41 * n; // 格子点の数 (幅40cm)
     static int m = 50000; // 時間格子の数
 
     /* データを貯めておく配列 */
@@ -26,11 +27,13 @@ public class PDE extends Application{
         int i, j;
         double[][] T = new double[height][width];
         double[][] TT = new double[height][width];
+        int d = 9;
 
         // 初期条件の設定
         for (i = 0; i < height; i++) {
             for (j = 0; j < width; j++) {
-                if ((i - 30) * (i - 30) + (j - 20) * (j - 20) <= 10 * 10) {
+                double rr = ((i - height/2) * (i - height/2) + (j - width/2) * (j - width/2)) / n / n;
+                if (10 * 10  - d <= rr && rr <= 10 * 10 + d) {
                     T[i][j] = 773.0;
                 } else {
                     T[i][j] = 300.0;
@@ -61,7 +64,8 @@ public class PDE extends Application{
             }
             for (i = 0; i < height; i++) {// 火源はディリクレ条件とする
                 for (j = 0; j < width; j++) {
-                    if ((i - 30) * (i - 30) + (j - 20) * (j - 20) <= 10 * 10) {
+                    double rr = ((i - height/2) * (i - height/2) + (j - width/2) * (j - width/2)) / n / n;
+                    if (10 * 10  - d <= rr && rr <= 10 * 10 + d) {
                         T[i][j] = 773.0;
                     }
                 }
@@ -69,10 +73,12 @@ public class PDE extends Application{
             for (i = 0; i < height; i++) {// 境界はノイマン条件とする 左右
                 T[i][0] = T[i][1];
                 T[i][width - 1] = T[i][width - 2];
+                if(T[i][width - 1] > 773)throw new Exception();
             }
             for (j = 0; j < width; j++) {// 境界はノイマン条件とする 上下
                 T[0][j] = T[1][j];
                 T[height - 1][j] = T[height - 2][j];
+                if(T[height - 1][j] > 773)throw new Exception();
             }
 
             // 計算結果をTTTに代入
@@ -92,8 +98,8 @@ public class PDE extends Application{
     /* 図のサイズ設定 */
     double x1 = 50;
     double y1 = 20;
-    double w = width * 10;
-    double h = height * 10;
+    double w = width * 10 / n;
+    double h = height * 10 / n;
 
     /* 秒数のカウンター */
     int count = 0;
@@ -101,12 +107,9 @@ public class PDE extends Application{
     /* Windowの設定 */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Group root = new Group();
-        Scene s = new Scene(root, w + x1 * 2, y1 + h + 100, Color.WHITE);
+        // 図の描画
         final Canvas canvas = new Canvas(w + x1 * 2, y1 + h + 100);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // 図の描画
         gc.setStroke(Color.GRAY);
         drawGraph(gc,count);
 
@@ -131,10 +134,15 @@ public class PDE extends Application{
         });
 
         // UI要素追加
+        Group root = new Group();
+        Scene s = new Scene(root, w + x1 * 2, y1 + h + 100, Color.WHITE);
+
         root.getChildren().add(canvas);
         root.getChildren().add(plusButton);
         root.getChildren().add(minusButton);
+
         primaryStage.setScene(s);
+        primaryStage.setTitle("２次元熱伝導方程式");
         primaryStage.show();
     }
 
@@ -151,10 +159,14 @@ public class PDE extends Application{
                 double w1 = w/TTT[0][0].length;
                 gc.setFill(c);
                 gc.fillRect(x1 + w1 * k,y1 + h1 * j,w1, h1);
-                gc.strokeRect(x1 + w1 * k,y1 + h1 * j,w1, h1);
+                //gc.strokeRect(x1 + w1 * k,y1 + h1 * j,w1, h1);
             }
         }
         gc.strokeRect(x1,y1,w,h);
+        gc.setFill(Color.BLACK);
+        gc.fillText(Integer.toString(height),x1-20,y1+10);
+        gc.fillText("0", x1-20,y1+h);
+        gc.fillText(Integer.toString(width), x1+w+10,y1+h);
 
         // 温度バーの描画
         for (int j = 0; j <= w; j++) {
@@ -164,9 +176,10 @@ public class PDE extends Application{
             gc.fillRect(x1 + j,y1 + h + 30,1,10);
             if((x*500) % 50 == 0){
                 gc.setFill(Color.BLACK);
-                gc.fillText("" + (int)(x*500),x1 + j - 5,(int)(y1 + h) + 60);
+                gc.fillText("" + (int)(x*500),x1 + j - 10,(int)(y1 + h) + 60);
             }
         }
+        gc.fillText("(℃)",x1 + w + 20,(int)(y1 + h) + 60);
         gc.strokeRect(x1,y1 + h + 30,w,10);
 
         // 秒数
@@ -177,60 +190,37 @@ public class PDE extends Application{
 
     /* 0-1の値から色を返す */
     Color GetColor(double x){
-        double r = 0;
-        double g = 0;
-        double b = 0;
-
+        double r = 240;
         if(0 <= x && x < 0.1){
-            r = 255;
-            g = 255;
-            b = 245;
+           return Color.hsb(0.9*r,1,1);
         }
         else if(0.1 <= x && x < 0.2){
-            r = 255;
-            g = 255;
-            b = 200;
+            return Color.hsb(0.8*r,1,1);
         }
         else if(0.2 <= x && x < 0.3){
-            r = 255;
-            g = 254;
-            b = 173;
+            return Color.hsb(0.7*r,1,1);
         }
         else if(0.3 <= x && x < 0.4){
-            r = 255;
-            g = 244;
-            b = 133;
+            return Color.hsb(0.6*r,1,1);
         }
         else if(0.4 <= x && x < 0.5){
-            r = 254;
-            g = 237;
-            b = 100;
+            return Color.hsb(0.5*r,1,1);
         }
         else if(0.5 <= x && x < 0.6){
-            r = 254;
-            g = 217;
-            b = 53;
+            return Color.hsb(0.4*r,1,1);
         }
         else if(0.6 <= x && x < 0.7){
-            r = 253;
-            g = 193;
-            b = 40;
+            return Color.hsb(0.3*r,1,1);
         }
         else if(0.7 <= x && x < 0.8){
-            r = 253;
-            g = 163;
-            b = 38;
+            return Color.hsb(0.2*r,1,1);
         }
         else if(0.8 <= x && x < 0.9){
-            r = 253;
-            g = 116;
-            b = 34;
+            return Color.hsb(0.1*r,1,1);
         }
         else if(0.9 <= x && x <= 1){
-            r = 252;
-            g = 13;
-            b = 27;
+            return Color.hsb(0 ,1,1);
         }
-        return new Color(r/255,g/255,b/255,1);
+        return Color.BLACK;
     }
 }
